@@ -27,11 +27,9 @@ Quick start::
 
 from .microphone import MicrophoneStream, load_sounddevice_module
 
-try:
-    from importlib.metadata import version as _v
-    __version__ = _v("autourgos-micinput")
-except Exception:
-    __version__ = "0.1.0"
+from autourgos_core import package_version
+
+__version__ = package_version("autourgos-micinput", fallback="0.1.2")
 
 __all__ = [
     "MicrophoneStream",

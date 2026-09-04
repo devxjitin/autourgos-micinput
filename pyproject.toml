@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "autourgos-micinput"
-version = "0.1.1"
+version = "0.1.2"
 description = "Standalone, provider-agnostic microphone capture for the Autourgos framework -- MicrophoneStream, usable by autourgos-live, autourgos-openaichat, autourgos-responses, autourgos-agent, or any other caller."
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -34,7 +34,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "autourgos-core>=0.2.0",
+    "autourgos-core>=0.3.0",
 ]
 
 [project.optional-dependencies]
