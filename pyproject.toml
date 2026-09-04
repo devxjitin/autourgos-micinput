@@ -34,7 +34,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "autourgos-core>=0.1.0",
+    "autourgos-core>=0.2.0",
 ]
 
 [project.optional-dependencies]
