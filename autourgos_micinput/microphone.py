@@ -19,16 +19,20 @@ import asyncio
 import logging
 from typing import Any, AsyncIterator, Optional, Tuple
 
+from autourgos_core import require_available, try_import
+
 logger = logging.getLogger(__name__)
 
 
 def load_sounddevice_module() -> Tuple[bool, Any, Optional[str]]:
-    """Try to import the `sounddevice` package. Returns (available, module, error)."""
-    try:
-        import sounddevice as _sd
-        return True, _sd, None
-    except ImportError as exc:
-        return False, None, str(exc)
+    """Try to import the `sounddevice` package. Returns (available, module, error).
+
+    Kept for backward compatibility (public API, re-exported from
+    autourgos_micinput.__init__) -- new code should use
+    autourgos_core.try_import("sounddevice") directly.
+    """
+    available, modules, error = try_import("sounddevice")
+    return available, (modules["sounddevice"] if available else None), error
 
 
 class MicrophoneStream:
@@ -66,18 +70,19 @@ class MicrophoneStream:
         self.mime_type = f"audio/pcm;rate={sample_rate}"
         self.max_queue_chunks = max_queue_chunks
         self._chunk_frames = sample_rate * chunk_ms // 1000
-        self._available, self._sd, self._import_error = load_sounddevice_module()
+        self._available, self._modules, self._import_error = try_import("sounddevice")
+        self._sd = self._modules["sounddevice"] if self._available else None
         self._stream: Any = None
         self._queue: Optional["asyncio.Queue[bytes]"] = None
         self._loop: Optional[asyncio.AbstractEventLoop] = None
         self.dropped_chunk_count = 0
 
     def _require_available(self) -> None:
-        if not self._available:
-            raise ImportError(
-                "The 'sounddevice' package is required for microphone capture "
-                f"(pip install autourgos-micinput[mic]). Import error: {self._import_error}"
-            )
+        require_available(
+            self._available,
+            "The 'sounddevice' package is required for microphone capture "
+            f"(pip install autourgos-micinput[mic]). Import error: {self._import_error}",
+        )
 
     async def __aenter__(self) -> "MicrophoneStream":
         self._require_available()
